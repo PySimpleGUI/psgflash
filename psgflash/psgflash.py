@@ -1,8 +1,17 @@
-'''
-Copyright 2021-2024 PySimpleGUI. All rights reserved.
+
+"""
+Copyright 2026 PySimpleGUI. All rights reserved.
 
 Licensed under LGPL3
-'''
+"""
+#    ___  ___                     __          ____                       __
+#  /'___\/\_ \                   /\ \        /\  _`\                    /\ \
+# /\ \__/\//\ \      __      ____\ \ \___    \ \ \/\_\     __     _ __  \_\ \    ____
+# \ \ ,__\ \ \ \   /'__`\   /',__\\ \  _ `\   \ \ \/_/_  /'__`\  /\`'__\/'_` \  /',__\
+#  \ \ \_/  \_\ \_/\ \L\.\_/\__, `\\ \ \ \ \   \ \ \L\ \/\ \L\.\_\ \ \//\ \L\ \/\__, `\
+#   \ \_\   /\____\ \__/.\_\/\____/ \ \_\ \_\   \ \____/\ \__/.\_\\ \_\\ \___,_\/\____/
+#    \/_/   \/____/\/__/\/_/\/___/   \/_/\/_/    \/___/  \/__/\/_/ \/_/ \/__,_ /\/___/
+
 
 import PySimpleGUI as sg
 from pathlib import Path
@@ -33,6 +42,7 @@ class G:    # Globals hack
     random_order = False
     number_of_cards = 0
     paused = True
+
 # --------------------------------- LOAD FLASH CARDS---------------------------------
 
 
@@ -115,6 +125,10 @@ def load_settings():
     G.random_order = sg.user_settings_get_entry('-RANDOM-', False)
     G.time_per_card = float(sg.user_settings_get_entry('-TIME PER CARD-', 0))
     G.answer_delay_time = float(sg.user_settings_get_entry('-ANSWER DELAY TIME-', 0))
+
+
+# --------------------------------- NEXT / PREV CARD ---------------------------------
+
 
 def next_card(card_index):
     if G.random_order:
@@ -204,9 +218,18 @@ def main():
             G.paused = True
             window.timer_stop_all()
 
-        window['-IMAGE-'].update(flashcards[card_index].image, zoom=2)
+        window['-IMAGE-'].update(flashcards[card_index].image, zoom=3)
 
     window.close()
+
+
+#   ______
+#  /\__  _\
+#  \/_/\ \/     ___    ___     ___     ____
+#     \ \ \    /'___\ / __`\ /' _ `\  /',__\
+#      \_\ \__/\ \__//\ \L\ \/\ \/\ \/\__, `\
+#      /\_____\ \____\ \____/\ \_\ \_\/\____/
+#      \/_____/\/____/\/___/  \/_/\/_/\/___/
 
 
 play_red_icon = b'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEIUlEQVR4nO3bO6hcVRQG4G8evrDSBEEQH52NokYsLCQSwcIiiIIWYikipvAJPsFCiQ9EsBAR0wmCImJhIAraiA+SThREsFHxgYKCBK4zcyzWbGfP5EbvZM4+58zl/jDcufswc/Za+1/rX2vvM72KSmCCMXpmY9sVPQyhV21/Y/8TQ7HqA3w8ffUFG7YjErt34QDx30ZFVfFwmzNrEhXnTW2uhtn42VUwYohRS3MrjcTu3Wkgd8Ckx6hCb5s6oKLfY1Jl9vXbnFAXsOOAtifQNnYc0PYE2kZdDhiIImPtUJcDxqLCGtT0fY1hVQekVd+P883K6rUJrVUnmj5/AMdws3DCxHyR1VnUtVK/CQa8gzdxkai2+jXeowjqmtxQ5IAN3IajuFswIbGhk0myztXpifgfi2bjFXyIywUbOpkkS9BzIIwdYx8+x5M4YzrWKTaUis+cDWfiKXyKvTrGhtIJKrFhhCvxEV7GOToimSVvnsKAoP1kOnavkMxbdEAySzoghUFPGNmfvh/hErwtJPNCLUpmiRumVX8fB7P7pNhPbBgLyTymRcks4YC0zf4rHsH1wshk2Hh630XJ/EALklmScqeZbbdfi8dx3MzwZGTKFTc4UTKLd5lNJMHTRYX4NK7BETPD0knUySSzeJfZRNJJRg7xJW7EXfhFGJZi/2SSea6CktlU1k2GpUz/GvbgjWxsZOaoXDKP4laFJLNp2ckz/fe4Q7TQ35o1VJtJ5lsKdZltVWFptQd4F1fjpelY30xJFiVzsctcOUG2WYamJDnAH7gPVwkjmR3QbiaZn+Gy7Popo2ubFWfZWoz/pabjuzYdsLiyr+ITXJFdZ14lfsCdos3+Ort+ymirCclPoG/Hs6InyGmfQiTN8RAexc/Z9ZUf7mjaAWlVR7gYzwuJS2NpPik3DPEVHsTh6bXEmlonVBq5vk9wj+gPFvU91QuD6d+Dono8bL56rA1NMCCt2Eg0Oy+KGGa20vn7ocgF9+OLhe+oHU3sB2yIfuAJIV/7bN4MDfAnHsB1wvi8gyyCkgz4W0x8L14QpS/zq57ifoD38BC+MSuIij+pUoIBqTrbjWdEU7PHfJ+fl8Q/CmnbL4zPS+LiKMGAtLo3TV+cmOTSfV8X+wQ/mVeIxlAyBPLGpq9BaVsGTSRBGpa2ZVBaBluRtmVQigGtStsyKMGA1qVtGdTJgFzaUtfWirQtg7oYkG9THcJjWpS2ZVCXA3bhO7FddWQ61okk939Y1QGJ0s+JrazfzSq9zhvP6g5IGxJrteo56n5Qcq2Mp74csHaGJ3RtV7hx7Dig7Qm0jR0HtD2BtpGrQL8KORts41+T9qv5fYo5BxzvhZytraRtAWOo4jAW809kXVrFA01rV80tgfTT2Qv+HdjGdN8S8hCo5bBxjdCHfwCC4TXJeYu0gAAAAABJRU5ErkJggg=='
