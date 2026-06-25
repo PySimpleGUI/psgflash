@@ -82,11 +82,11 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None)):
             break
 
         try:
-            delay = int(values['-ANSWER DELAY TIME-'])
+            delay = float(values['-ANSWER DELAY TIME-'])
         except:
             delay = 0
         try:
-            per_card = int(values['-TIME PER CARD-'])
+            per_card = float(values['-TIME PER CARD-'])
         except:
             per_card = 0
 
@@ -113,8 +113,8 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None)):
 def load_settings():
     G.show_answer = sg.user_settings_get_entry('-SHOW ANSWER-', False)
     G.random_order = sg.user_settings_get_entry('-RANDOM-', False)
-    G.time_per_card = sg.user_settings_get_entry('-TIME PER CARD-', 0)
-    G.answer_delay_time = sg.user_settings_get_entry('-ANSWER DELAY TIME-', 0)
+    G.time_per_card = int(sg.user_settings_get_entry('-TIME PER CARD-', 0))
+    G.answer_delay_time = float(sg.user_settings_get_entry('-ANSWER DELAY TIME-', 0))
 
 def next_card(card_index):
     if G.random_order:
@@ -173,7 +173,7 @@ def main():
         elif event == '-FORWARD-':
             if G.show_answer:
                 window['-ANSWER-'].update(flashcards[card_index].answer)
-                window.timer_start(f'00:00:{G.answer_delay_time}', repeating=False, key='-timer forward-')
+                window.timer_start(frequency_ms=G.answer_delay_time*1000, repeating=False, key='-timer forward-')
             else:
                 card_index = next_card(card_index)
                 window['-ANSWER-'].update('')
