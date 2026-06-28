@@ -1,9 +1,9 @@
+import PySimpleGUI as sg
+from pathlib import Path
+from typing import List, Tuple
+from random import randint
+import os
 
-"""
-Copyright 2026 PySimpleGUI. All rights reserved.
-
-Licensed under LGPL3
-"""
 
 #    .----------------.  .----------------.  .----------------.  .----------------.  .----------------.
 #   | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
@@ -27,11 +27,15 @@ Licensed under LGPL3
 #   | |              | || |              | || |              | || |              | || |              | |
 #   | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
 #    '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
-#
-import PySimpleGUI as sg
-from pathlib import Path
-from typing import List, Tuple
-from random import randint
+
+
+
+"""
+Copyright 2026 PySimpleGUI. All rights reserved.
+
+Licensed under LGPL3
+"""
+
 
 version = '6.0'
 __version__ = version.split()[0]
@@ -40,8 +44,10 @@ __version__ = version.split()[0]
 Changelog since last major release
 
 6.0     24-Jun-2026     Initial release     
-
 """
+
+INVERSIONS_FOLDER = Path(__file__).resolve().parent.parent / "flashcards" / "inversions"
+
 
 class Flashcard:
     def __init__(self, filename, image, answer):
@@ -57,6 +63,7 @@ class G:    # Globals hack
     random_order = False
     number_of_cards = 0
     paused = True
+    flashcards = []
 
 #   ██╗      ██████╗  █████╗ ██████╗
 #   ██║     ██╔═══██╗██╔══██╗██╔══██╗
@@ -80,7 +87,8 @@ def load_flashcards(flashcards_file):
             image = image_file.read()
         flashcard = Flashcard(file, image, answer)
         flashcards.append(flashcard)
-
+    G.flashcards = flashcards
+    G.number_of_cards = len(flashcards)
     return flashcards
 
 #   ███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
@@ -90,24 +98,32 @@ def load_flashcards(flashcards_file):
 #   ███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
 #   ╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
 
-def show_settings_window(location:Tuple[int|None, int|None]=(None, None)):
+def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor: str=None):
     """
     Shows the settings window
 
     :param location:        Location of the icon window
     :type location:         Tuple[int, int]
     """
+    sg.theme('dark red')
+    flashcard_sets = [f for f in os.listdir(INVERSIONS_FOLDER) if f.endswith('.flash')]
 
-    layout = [#[sg.T('Settings', font='_ 15')],
+    left_layout = [#[sg.T('Settings', font='_ 15')],
               [sg.Column([[sg.B(sg.SYMBOL_UP_ARROWHEAD, font='_ 10', p=0, k='-PER CARD UP-')], [sg.B(sg.SYMBOL_DOWN_ARROWHEAD, font='_ 10', p=0,k='-PER CARD DOWN-')]], p=0),
                sg.Input(setting=0, justification='r', s=3, k='-TIME PER CARD-'), sg.T('Seconds to show card')],
               [sg.Checkbox('Show answer before advancing', setting=False, k='-SHOW ANSWER-')],
               [sg.Column([[sg.B(sg.SYMBOL_UP_ARROWHEAD, font='_ 10', p=0, k='-DELAY UP-')], [sg.B(sg.SYMBOL_DOWN_ARROWHEAD, font='_ 10', p=0,k='-DELAY DOWN-')]], p=0),
                sg.Input(setting=0, justification='r', s=3, k='-ANSWER DELAY TIME-'), sg.T('Seconds to show answer before advance')],
-              [sg.Checkbox('Order randomly', setting=False, k='-RANDOM-')],
+              [sg.Checkbox('Order randomly', setting=False, k='-RANDOM-')]]
+
+    right_layout = [[sg.T('Flashcards')],
+                    [sg.Listbox(flashcard_sets, size=(15,10), k='-FLASH LIST-', no_scrollbar=True)],
+                    [sg.P(), sg.B('Load'), sg.P()],
+                    ]
+    layout = [[sg.Col(left_layout), sg.Col(right_layout)],
               [sg.Push(), sg.OK(), sg.Cancel()]]
 
-    window = sg.Window('Settings', layout, location=location, keep_on_top=True, font='_ 18', use_custom_titlebar=True)
+    window = sg.Window('Settings', layout, location=location, keep_on_top=True, font='_ 18', use_custom_titlebar=True, location_anchor=anchor)
 
     while True:
         event, values = window.read()
@@ -141,6 +157,13 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None)):
             per_card += inc
             per_card = 0 if per_card < 0 else per_card
             window['-TIME PER CARD-'].update(per_card)
+        elif event == 'Load':
+            try:
+                flashset = values['-FLASH LIST-'][0]
+            except:     # may not have selected anything.  If so, ignore
+                continue
+            G.flashcards = load_flashcards(flashset)
+            sg.popup(f'Loaded flashcard set {flashset}', keep_on_top=True)
     window.close()
 
 
@@ -220,8 +243,11 @@ def main():
         elif event == '-ANSWER-':
             window['-ANSWER-'].update(flashcards[card_index].answer)
         elif event == '-SETTINGS-':
-            show_settings_window(location=window.current_location())
+            show_settings_window(location=window.current_location(use_anchor=sg.WIN_ANCHOR_CENTER), anchor=sg.WIN_ANCHOR_CENTER)
             load_settings()
+            if flashcards != G.flashcards:
+                flashcards = G.flashcards       # New set loaded in settings
+            card_index = 0
         elif event == '-PLAY-':
             window['-PLAY-'].update(image_source=play_red_icon)
             window['-PAUSE-'].update(image_source=pause_icon)
