@@ -5,6 +5,8 @@
   <h2 align="center">A PySimpleGUI Flashcard Application</h2>
 </p>
 
+![image](https://pysimplegui.net/images/logos/Logo_Full_Transparent.png)
+
 ## Features
 
 * Create flash cards
@@ -63,7 +65,6 @@ You may need to edit the code to meet your needs.  It's rather simple code.
 
 ## Screen Capture
 
-![screen capture](https://github.com/PySimpleGUI/psgflash/blob/main/ImagesForReadme/psgflash.mp4)
 
 <p align="center">
   <video src="https://github.com/PySimpleGUI/psgflash/blob/main/ImagesForReadme/psgflash.mp4"
