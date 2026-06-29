@@ -1,5 +1,5 @@
 <p align="center">
-  <p align="center"><img width="238" height="135" src="https://pysimplegui.net/images/logos/psglogofull.svg"><p>
+  <p align="center"><img width="238" height="135" src="https://pysimplegui.net/images/logos/Logo_Full_Transparent.png"><p>
 
   <h2 align="center">psgflash</h2>
   <h2 align="center">A PySimpleGUI Flashcard Application</h2>
@@ -63,6 +63,13 @@ You may need to edit the code to meet your needs.  It's rather simple code.
 
 ## Screen Capture
 
+![screen capture](https://github.com/PySimpleGUI/psgflash/blob/main/ImagesForReadme/psgflash.mp4)
+
+<p align="center">
+  <video src="https://github.com/PySimpleGUI/psgflash/blob/main/ImagesForReadme/psgflash.mp4"
+         width="80%" controls>
+  </video>
+</p>
 
 ## License & Copyright
 
