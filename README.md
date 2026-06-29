@@ -1,60 +1,24 @@
 <p align="center">
   <p align="center"><img width="238" height="135" src="https://pysimplegui.net/images/logos/psglogofull.svg"><p>
 
-  <h2 align="center">psgfiglet</h2>
-  <h2 align="center">A PySimpleGUI Application</h2>
+  <h2 align="center">psgflash</h2>
+  <h2 align="center">A PySimpleGUI Flashcard Application</h2>
 </p>
-
-Create Figlets
-
-```text
-  ______ _       _      _
- |  ____(_)     | |    | |
- | |__   _  __ _| | ___| |_ ___
- |  __| | |/ _` | |/ _ \ __/ __|
- | |    | | (_| | |  __/ |_\__ \
- |_|    |_|\__, |_|\___|\__|___/
-            __/ |
-           |___/
-```
-```text
-  _               ___       __  _                 _        ___        _____
- | |__  _   _    / _ \_   _/ _\(_)_ __ ___  _ __ | | ___  / _ \/\ /\  \_   \
- | '_ \| | | |  / /_)/ | | \ \ | | '_ ` _ \| '_ \| |/ _ \/ /_\/ / \ \  / /\/
- | |_) | |_| | / ___/| |_| |\ \| | | | | | | |_) | |  __/ /_\\\ \_/ /\/ /_
- |_.__/ \__, | \/     \__, \__/|_|_| |_| |_| .__/|_|\___\____/ \___/\____/
-        |___/         |___/                |_|
-```
-
-
-
-
-
-
-
-
 
 ## Features
 
-* Retro ASCII ART
-* Create big block letters composed of smaller characters
-* Choose from dozens of fonts
-* Copy and paste into your documents and code
-
+* Create flash cards
+* Manual advance or playback based
+* Control playback speed (how long a flashcard remains until answer is shown)
+* Control how long answer is shown
+* Random or ordered flashcards
+* Load multiple sets of cards
 
 ## Installation
 
 ### Using PIP with PyPI
 
-The latest official release of PySimpleGUI products can be found on PyPI.  To pip install the demo applications from PyPI, use this command
-
-#### If you use the command `python` on your computer to invoke Python (Windows):
-
-`pip install --upgrade psgfiglet`
-
-#### If you use the command `python3` on your computer to invoke Python (Linux, Mac):
-
-`pip3 install --upgrade psgfiglet`
+Not yet on PyPI
 
 ### Using PIP with GitHub
 
@@ -63,61 +27,46 @@ You can also pip install the PySimpleGUI Applications that are in the PySimpleGU
 #### If you use the command `python` on your computer to invoke Python (Windows):
 
 ```bash
-python -m pip install --upgrade https://github.com/PySimpleGUI/psgfiglet/zipball/main
+python -m pip install --upgrade https://github.com/PySimpleGUI/psgflash/zipball/main
 ```
 
 #### If you use the command `python3` on your computer to invoke Python (Linux, Mac):
 
 ```bash
-python3 -m pip install --upgrade https://github.com/PySimpleGUI/psgfiglet/zipball/main
+python3 -m pip install --upgrade https://github.com/PySimpleGUI/psgflash/zipball/main
 ```
-
+NOTE - the sample flashcard files and images are not currently pip installed.  It's best to clone the repo at this point since you'll want to edit the flashcard files and use your own images
 
 ## Usage
 
-Once installed, launch psgfiglet by typing the following in your command line:
+Create a flashcard file
 
-`psgfiglet`
+The format of a flashcard file is each card is on a single line.  The line contains:
+`filename,text_answer`
 
-## About - What is a Figlet?
+Here's an example that's included in this repo
 
-A Figlet is a text based way to add large block text to your code or chats.  There are a variety of "Fonts" available that you'll find listed along the left side of the screen.
-
-
-## To use in your code
-
-The easiest way to is make a multiline string in your code using triple quotes:
-
-```python
-
-'''
-This is a multiline string
-Line 2
-'''
+```text
+Inv003.png,C
+Inv006.png,C♯
+Inv009.png,D
+Inv012.png,E♭
+Inv015.png,E
 ```
 
+## Development status
 
-You can simply paste your Figlet into one of these multiline comments.  They work well at breaking up your code into chunks
+Still very much in progress.  I coded it up specifically for my own use.  The code is tuned to match the images that I'm using.  Next step would be to look through the images and find the sizes and scale as needed.  Maybe setting for target image size.  Or it could be part of the flashcard file itself.
 
-```python
+You may need to edit the code to meet your needs.  It's rather simple code.
 
-'''
-                    oo          
-                                
-88d8b.d8b. .d8888b. dP 88d888b. 
-88'`88'`88 88'  `88 88 88'  `88 
-88  88  88 88.  .88 88 88    88 
-dP  dP  dP `88888P8 dP dP    dP
-'''
 
-def main():
-    x = 20
+## Screen Capture
 
-```
 
 ## License & Copyright
 
-Copyright 2023-2024 PySimpleGUI.
+Copyright 2026 PySimpleGUI.
 
 Licensed under LGPL3.
 
