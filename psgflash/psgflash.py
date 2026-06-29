@@ -120,10 +120,10 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor
                     [sg.Listbox(flashcard_sets, size=(15,10), k='-FLASH LIST-', no_scrollbar=True)],
                     [sg.P(), sg.B('Load'), sg.P()],
                     ]
-    layout = [[sg.Col(left_layout), sg.Col(right_layout)],
-              [sg.Push(), sg.OK(), sg.Cancel()]]
+    layout = [[sg.Frame("", [[sg.Col(left_layout), sg.Col(right_layout)],
+              [sg.OK(), sg.Cancel()]], border_width_no_relief=2, p=0, expand_x=True, expand_y=True)]]
 
-    window = sg.Window('Settings', layout, location=location, keep_on_top=True, font='_ 18', use_custom_titlebar=True, location_anchor=anchor)
+    window = sg.Window('Settings', layout, location=location, keep_on_top=True, font='_ 18',  location_anchor=anchor)
 
     while True:
         event, values = window.read()
@@ -243,11 +243,13 @@ def main():
         elif event == '-ANSWER-':
             window['-ANSWER-'].update(flashcards[card_index].answer)
         elif event == '-SETTINGS-':
+            window.minimize()
             show_settings_window(location=window.current_location(use_anchor=sg.WIN_ANCHOR_CENTER), anchor=sg.WIN_ANCHOR_CENTER)
             load_settings()
             if flashcards != G.flashcards:
                 flashcards = G.flashcards       # New set loaded in settings
             card_index = 0
+            window.normal()
         elif event == '-PLAY-':
             window['-PLAY-'].update(image_source=play_red_icon)
             window['-PAUSE-'].update(image_source=pause_icon)
