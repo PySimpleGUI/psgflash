@@ -44,6 +44,10 @@ __version__ = version.split()[0]
 Changelog since last major release
 
 6.0     24-Jun-2026     Initial release     
+6.0.1   30-Jun-2026     Added card history to make navigating back/forward work.  
+                        Fixed type syntax error (compatibility problem?) I'm a typedef-rookie
+                        Removed ".flash" extension when displaying in setup list
+                        Made loading a flashcard deck close the setup window                          
 """
 
 INVERSIONS_FOLDER = Path(__file__).resolve().parent.parent / "flashcards" / "inversions"
@@ -101,7 +105,7 @@ def load_flashcards(flashcards_file):
 #   ███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
 #   ╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
 
-def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor: str=None):
+def show_settings_window(location=(None, None), anchor: str=None):
     """
     Shows the settings window
 
@@ -109,7 +113,8 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor
     :type location:         Tuple[int, int]
     """
     sg.theme('dark red')
-    flashcard_sets = [f for f in os.listdir(INVERSIONS_FOLDER) if f.endswith('.flash')]
+    flashcard_sets: List[str] = [f for f in os.listdir(INVERSIONS_FOLDER) if f.endswith('.flash')]
+    flashcard_choices = [name[:-6] for name in flashcard_sets]
 
     left_layout = [#[sg.T('Settings', font='_ 15')],
               [sg.Column([[sg.B(sg.SYMBOL_UP_ARROWHEAD, font='_ 10', p=0, k='-PER CARD UP-')], [sg.B(sg.SYMBOL_DOWN_ARROWHEAD, font='_ 10', p=0,k='-PER CARD DOWN-')]], p=0),
@@ -120,7 +125,7 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor
               [sg.Checkbox('Order randomly', setting=False, k='-RANDOM-')]]
 
     right_layout = [[sg.T('Flashcards')],
-                    [sg.Listbox(flashcard_sets, size=(15,10), k='-FLASH LIST-', no_scrollbar=True)],
+                    [sg.Listbox(flashcard_choices, size=(15,10), k='-FLASH LIST-', no_scrollbar=True)],
                     [sg.P(), sg.B('Load'), sg.P()],
                     ]
     layout = [[sg.Frame("", [[sg.Col(left_layout), sg.Col(right_layout)],
@@ -158,11 +163,11 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor
             window['-TIME PER CARD-'].update(per_card)
         elif event == 'Load':
             try:
-                flashset = values['-FLASH LIST-'][0]
+                flashset = values['-FLASH LIST-'][0] + '.flash'
             except:     # may not have selected anything.  If so, ignore
                 continue
             G.flashcards = load_flashcards(flashset)
-            sg.popup(f'Loaded flashcard set {flashset}', keep_on_top=True)
+            sg.popup(f'Loaded flashcard set {flashset}', keep_on_top=True, auto_close=True, auto_close_duration=1)
             break
     window.close()
 
@@ -235,7 +240,7 @@ def main():
 
     while True:
         event, values = window.read()
-        print(event, values)
+        # print(event, values)
         if event in (sg.WIN_CLOSED, "Exit"):
             break
         elif event == '-FORWARD-' or event.startswith('Right'):

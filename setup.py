@@ -11,7 +11,7 @@ def readme():
 
 setuptools.setup(
 name="psgflash",
-version="6.0",
+version="6.0.1",
 author="PySimpleGUI",
 install_requires=["PySimpleGUI","pillow"],
 description="Create flash cards using PySimpleGUI",
