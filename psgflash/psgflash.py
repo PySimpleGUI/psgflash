@@ -64,6 +64,8 @@ class G:    # Globals hack
     number_of_cards = 0
     paused = True
     flashcards = []
+    card_history = []
+    rewind_pointer = None
 
 #   ██╗      ██████╗  █████╗ ██████╗
 #   ██║     ██╔═══██╗██╔══██╗██╔══██╗
@@ -89,6 +91,7 @@ def load_flashcards(flashcards_file):
         flashcards.append(flashcard)
     G.flashcards = flashcards
     G.number_of_cards = len(flashcards)
+    G.card_history = []
     return flashcards
 
 #   ███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
@@ -142,10 +145,6 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor
 
         if event == 'OK':
             window.settings_save(values)
-            # G.show_answer = values['-SHOW ANSWER-']
-            # G.random_order = values['-RANDOM-']
-            # G.time_per_card = values['-TIME PER CARD-']
-            # G.answer_delay_time = values['-ANSWER DELAY TIME-']
             break
         elif event in ('-DELAY UP-','-DELAY DOWN-'):
             inc = +0.5 if event == '-DELAY UP-' else -0.5
@@ -164,6 +163,7 @@ def show_settings_window(location:Tuple[int|None, int|None]=(None, None), anchor
                 continue
             G.flashcards = load_flashcards(flashset)
             sg.popup(f'Loaded flashcard set {flashset}', keep_on_top=True)
+            break
     window.close()
 
 
@@ -190,14 +190,29 @@ def main():
 
     # --------------------------------- NEXT / PREV CARD ---------------------------------
     def next_card(card_index):
+        if G.rewind_pointer is not None:
+            G.rewind_pointer += 1
+            if G.rewind_pointer < len(G.card_history):
+                return G.card_history[G.rewind_pointer]
+            else:
+                G.rewind_pointer = None
+                
         if G.random_order:
             card_index = randint(0, G.number_of_cards - 1)
         else:
             card_index = (card_index + 1) % G.number_of_cards
+        G.card_history.append(card_index)
         return card_index
 
     def prev_card(card_index):
-        return (card_index + (G.number_of_cards - 1)) % G.number_of_cards
+        if G.rewind_pointer is None:
+            G.rewind_pointer = len(G.card_history)-1
+        else:
+            if G.rewind_pointer > 0:
+                G.rewind_pointer -= 1
+        return G.card_history[G.rewind_pointer]
+
+        # return (card_index + (G.number_of_cards - 1)) % G.number_of_cards
     # ------------------------------------------------------------------------------------
 
     sg.set_options(icon=music_icon)
@@ -214,30 +229,31 @@ def main():
               # [sg.Push(), sg.Button(sg.SYMBOL_X_SMALL, button_color=(sg.theme_button_color_text(), sg.theme_background_color()), border_width=0, font='_18', k='Exit')]]
 
 
-    window = sg.Window("Inversions Flashcards", layout, finalize=True, auto_save_location=True, keep_on_top=True, use_custom_titlebar=True, titlebar_icon=music_icon)
+    window = sg.Window("Inversions Flashcards", layout, finalize=True, auto_save_location=True, keep_on_top=True, use_custom_titlebar=True, titlebar_icon=music_icon, return_keyboard_events=True)
 
     card_index = 0
 
     while True:
         event, values = window.read()
-        # print(event, values)
+        print(event, values)
         if event in (sg.WIN_CLOSED, "Exit"):
             break
-        elif event == '-FORWARD-':
+        elif event == '-FORWARD-' or event.startswith('Right'):
+            window.timer_stop_all()
             if G.show_answer:
                 window['-ANSWER-'].update(flashcards[card_index].answer)
-                window.timer_start(frequency_ms=G.answer_delay_time*1000, repeating=False, key='-timer forward-')
+                window.timer_start(frequency_ms=G.answer_delay_time*1000, repeating=False, key='-answer shown-')
             else:
                 card_index = next_card(card_index)
                 window['-ANSWER-'].update('')
                 if not G.paused:
                     window.timer_start(G.time_per_card*1000, repeating=False, key='-FORWARD-')
-        elif event == '-timer forward-':
+        elif event == '-answer shown-':
             card_index = next_card(card_index)
             if not G.paused:
                 window.timer_start(G.time_per_card*1000, repeating=False, key='-FORWARD-')
             window['-ANSWER-'].update('')
-        elif event == '-BACK-':
+        elif event == '-BACK-' or event.startswith('Left'):
             card_index = prev_card(card_index)
             window['-ANSWER-'].update('')
         elif event == '-ANSWER-':
